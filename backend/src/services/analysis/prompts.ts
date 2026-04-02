@@ -69,7 +69,7 @@ Score these 7 metrics for the whole session (1–10, confidence 0.0–1.0, ratio
 7. workflow_structure   — Is there a logical flow? Interruptions and direction changes must reduce this.
 
 ── SUMMARY & INSIGHTS ──
-- snapshot_summary: 2-3 sentences describing what actually happened and the session quality — do not describe intent as outcome
+- snapshot_summary: 5-8 sentences/points describing what actually happened and the session quality — do not describe intent as outcome
 - strengths: 2-4 things the user genuinely did well, each tied to a specific message or behavior visible in the transcript
 - improvements: 2-4 specific, actionable things to improve — interruptions, vague re-asks, and unverified outputs must appear here if present
 - workflow_pattern: plan-first | dive-in | iterative | reactive | exploratory
