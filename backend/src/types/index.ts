@@ -5,4 +5,4 @@ export type ApiResponse<T> = {
 };
 
 export type { Message, NormalizedTranscript, TranscriptRow } from "./transcript";
-export type { Segment, MetricScore, AnalysisOutput, AnalysisRow, AiProviderConfig } from "./analysis";
+export type { Segment, MetricScore, OverallScores, AnalysisOutput, AnalysisRow, AiProviderConfig } from "./analysis";

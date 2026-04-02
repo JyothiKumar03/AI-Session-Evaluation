@@ -1,85 +1,17 @@
 import type { Request, Response, NextFunction } from "express";
-import multer from "multer";
-import { detect_and_parse } from "../services/ingestion/parser-registry";
-import { run_analysis_pipeline } from "../services/analysis/pipeline";
+import { z } from "zod";
 import {
-  insert_transcript,
   get_transcript_by_id,
   list_transcripts,
   delete_transcript,
 } from "../db/transcript-queries";
 import { get_analysis_by_transcript } from "../db/analysis-queries";
 import { ok, err } from "../utils/index";
-import type { AiProviderConfig } from "../types/analysis";
 
-// ── Multer: memory storage, accept single file ────────────────────────────────
-export const upload = multer({
-  storage: multer.memoryStorage(),
-  limits:  { fileSize: 10 * 1024 * 1024 }, // 10 MB
+// ── Param schema ──────────────────────────────────────────────────────────────
+const IdParamSchema = z.object({
+  id: z.string().check(z.uuid()),
 });
-
-// ── POST /api/transcripts/upload ──────────────────────────────────────────────
-export async function upload_transcript(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    if (!req.file) {
-      res.status(400).json(err("No file uploaded"));
-      return;
-    }
-
-    // AI provider configs from request body — fallback chain ordered by priority
-    const ai_configs: AiProviderConfig[] = req.body.ai_configs
-      ? JSON.parse(req.body.ai_configs as string)
-      : default_ai_configs();
-
-    const raw_content = req.file.buffer.toString("utf-8");
-    const filename    = req.file.originalname;
-
-    // 1. Parse transcript into normalized messages
-    const transcript = detect_and_parse(raw_content, filename);
-
-    if (transcript.messages.length === 0) {
-      res.status(422).json(err("Could not extract any messages from file"));
-      return;
-    }
-
-    // 2. Store transcript
-    await insert_transcript({ ...transcript, raw_content });
-
-    // 3. Run analysis (pass1 → pass2) and store results
-    const analysis = await run_analysis_pipeline(
-      transcript.id,
-      transcript.messages,
-      ai_configs
-    );
-
-    res.status(201).json(
-      ok({
-        transcript: {
-          id:            transcript.id,
-          filename:      transcript.filename,
-          source:        transcript.source,
-          message_count: transcript.messages.length,
-        },
-        analysis: {
-          id:               analysis.id,
-          snapshot_summary: analysis.snapshot_summary,
-          workflow_pattern: analysis.workflow_pattern,
-          overall_scores:   analysis.overall_scores,
-          strengths:        analysis.strengths,
-          improvements:     analysis.improvements,
-          segments:         analysis.segments,
-          model_used:       analysis.model_used,
-        },
-      })
-    );
-  } catch (e) {
-    next(e);
-  }
-}
 
 // ── GET /api/transcripts ──────────────────────────────────────────────────────
 export async function get_all_transcripts(
@@ -102,14 +34,20 @@ export async function get_transcript(
   next: NextFunction
 ) {
   try {
-    const transcript = await get_transcript_by_id(String(req.params.id));
+    const params = IdParamSchema.safeParse(req.params);
+
+    if (!params.success) {
+      res.status(400).json(err(params.error.issues[0].message));
+      return;
+    }
+
+    const transcript = await get_transcript_by_id(params.data.id);
     if (!transcript) {
       res.status(404).json(err("Transcript not found"));
       return;
     }
 
-    const analysis = await get_analysis_by_transcript(String(req.params.id));
-
+    const analysis = await get_analysis_by_transcript(params.data.id);
     res.json(ok({ transcript, analysis }));
   } catch (e) {
     next(e);
@@ -123,59 +61,22 @@ export async function remove_transcript(
   next: NextFunction
 ) {
   try {
-    const transcript = await get_transcript_by_id(String(req.params.id));
+    const params = IdParamSchema.safeParse(req.params);
+
+    if (!params.success) {
+      res.status(400).json(err(params.error.issues[0].message));
+      return;
+    }
+
+    const transcript = await get_transcript_by_id(params.data.id);
     if (!transcript) {
       res.status(404).json(err("Transcript not found"));
       return;
     }
-    await delete_transcript(String(req.params.id));
-    res.json(ok({ deleted: String(req.params.id) }));
+
+    await delete_transcript(params.data.id);
+    res.json(ok({ deleted: params.data.id }));
   } catch (e) {
     next(e);
   }
-}
-
-// ── GET /api/transcripts/compare?session1=XX&session2=XX ─────────────────────
-export async function compare_transcripts(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const session1 = String(req.query.session1 ?? "");
-    const session2 = String(req.query.session2 ?? "");
-
-    if (!session1 || !session2) {
-      res.status(400).json(err("Both session1 and session2 query params are required"));
-      return;
-    }
-
-    const [t1, t2] = await Promise.all([
-      get_transcript_by_id(session1),
-      get_transcript_by_id(session2),
-    ]);
-
-    if (!t1) { res.status(404).json(err(`Session ${session1} not found`)); return; }
-    if (!t2) { res.status(404).json(err(`Session ${session2} not found`)); return; }
-
-    const [a1, a2] = await Promise.all([
-      get_analysis_by_transcript(session1),
-      get_analysis_by_transcript(session2),
-    ]);
-
-    res.json(ok({
-      session1: { transcript: t1, analysis: a1 },
-      session2: { transcript: t2, analysis: a2 },
-    }));
-  } catch (e) {
-    next(e);
-  }
-}
-
-// ── Default AI config (can be overridden per request) ────────────────────────
-function default_ai_configs(): AiProviderConfig[] {
-  return [
-    { provider: "openai",     model: "gpt-4o-mini",                max_output_tokens: 4096 },
-    { provider: "openrouter", model: "openai/gpt-4o-mini-2024-07-18", max_output_tokens: 4096 },
-  ];
 }
