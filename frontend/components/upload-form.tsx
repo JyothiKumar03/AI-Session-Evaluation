@@ -105,7 +105,7 @@ export default function uploadForm() {
             <p className="font-semibold text-gray-700">Drop your transcript here</p>
             <p className="text-sm text-gray-400 mt-1">
               or <span className="text-blue-600 underline underline-offset-2">browse files</span>
-              {" "}— JSON, up to 10 MB
+              {" "}— .json, .jsonl, .txt, .md · up to 10 MB
             </p>
           </div>
         )}
@@ -114,7 +114,7 @@ export default function uploadForm() {
       <input
         ref={inputRef}
         type="file"
-        accept=".json,.txt,.jsonl"
+        accept=".json,.jsonl,.txt,.md"
         onChange={onInputChange}
         className="hidden"
       />
