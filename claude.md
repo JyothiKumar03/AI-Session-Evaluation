@@ -1,4 +1,4 @@
-# SOP Rules — AI Workflow Evaluator
+# SOP Rules — AI Coding Session Evaluator
 
 ## Naming Conventions
 
