@@ -135,6 +135,43 @@ export async function remove_transcript(
   }
 }
 
+// ── GET /api/transcripts/compare?session1=XX&session2=XX ─────────────────────
+export async function compare_transcripts(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const session1 = String(req.query.session1 ?? "");
+    const session2 = String(req.query.session2 ?? "");
+
+    if (!session1 || !session2) {
+      res.status(400).json(err("Both session1 and session2 query params are required"));
+      return;
+    }
+
+    const [t1, t2] = await Promise.all([
+      get_transcript_by_id(session1),
+      get_transcript_by_id(session2),
+    ]);
+
+    if (!t1) { res.status(404).json(err(`Session ${session1} not found`)); return; }
+    if (!t2) { res.status(404).json(err(`Session ${session2} not found`)); return; }
+
+    const [a1, a2] = await Promise.all([
+      get_analysis_by_transcript(session1),
+      get_analysis_by_transcript(session2),
+    ]);
+
+    res.json(ok({
+      session1: { transcript: t1, analysis: a1 },
+      session2: { transcript: t2, analysis: a2 },
+    }));
+  } catch (e) {
+    next(e);
+  }
+}
+
 // ── Default AI config (can be overridden per request) ────────────────────────
 function default_ai_configs(): AiProviderConfig[] {
   return [
