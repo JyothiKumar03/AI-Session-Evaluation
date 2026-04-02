@@ -13,7 +13,7 @@ const UploadForm = uploadForm;
 
 function SkeletonCard() {
   return (
-    <div className="rounded-xl bg-white ring-1 ring-foreground/10 p-4 flex flex-col gap-3">
+    <div className="rounded-xl bg-white ring-1 ring-gray-200 p-4 flex flex-col gap-3">
       <Skeleton className="h-4 w-2/3" />
       <Skeleton className="h-3 w-1/3" />
       <div className="flex gap-2 mt-1">

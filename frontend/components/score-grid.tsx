@@ -1,57 +1,8 @@
 "use client";
 
-import {
-  Lightbulb,
-  Target,
-  Activity,
-  Brain,
-  Shield,
-  Rocket,
-  Workflow,
-} from "lucide-react";
 import type { MetricKey, MetricScore } from "@/types";
 import { cn } from "@/lib/utils";
-
-const metricMeta: Record<
-  MetricKey,
-  { label: string; Icon: React.ElementType; description: string }
-> = {
-  prompt_clarity: {
-    label: "Prompt Clarity",
-    Icon: Lightbulb,
-    description: "How clearly goals were communicated",
-  },
-  context_management: {
-    label: "Context Management",
-    Icon: Target,
-    description: "How well context was maintained",
-  },
-  iteration_efficiency: {
-    label: "Iteration Efficiency",
-    Icon: Activity,
-    description: "Speed and effectiveness of iterations",
-  },
-  critical_thinking: {
-    label: "Critical Thinking",
-    Icon: Brain,
-    description: "Depth of reasoning and analysis",
-  },
-  error_recovery: {
-    label: "Error Recovery",
-    Icon: Shield,
-    description: "How well errors were handled",
-  },
-  ai_leverage: {
-    label: "AI Leverage",
-    Icon: Rocket,
-    description: "How effectively AI capabilities were used",
-  },
-  workflow_structure: {
-    label: "Workflow Structure",
-    Icon: Workflow,
-    description: "Organisation and flow of work",
-  },
-};
+import { METRIC_META } from "@/constants/metrics";
 
 function scoreColor(score: number) {
   if (score >= 8) return "text-green-600";
@@ -92,21 +43,18 @@ type Props = {
 };
 
 export default function scoreGrid({ scores }: Props) {
-  const metricKeys = Object.keys(metricMeta) as MetricKey[];
+  const metricKeys = Object.keys(METRIC_META) as MetricKey[];
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {metricKeys.map((key) => {
-        const { label, Icon } = metricMeta[key];
+        const { label, Icon } = METRIC_META[key];
         const { score, confidence, rationale } = scores[key];
 
         return (
           <div
             key={key}
-            className={cn(
-              "flex flex-col gap-3 rounded-xl ring-1 p-4",
-              scoreBg(score)
-            )}
+            className={cn("flex flex-col gap-3 rounded-xl ring-1 p-4", scoreBg(score))}
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">

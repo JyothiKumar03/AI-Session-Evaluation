@@ -14,18 +14,7 @@ import { Button } from "@/components/ui/button";
 import { useDeleteTranscript } from "@/hooks/use-transcripts";
 import type { TranscriptRow } from "@/types";
 import { cn } from "@/lib/utils";
-
-const sourceLabels: Record<string, string> = {
-  claude_code: "Claude Code",
-  codex: "Codex",
-  generic: "Generic",
-};
-
-const sourceColors: Record<string, string> = {
-  claude_code: "bg-blue-100 text-blue-700 border-blue-200",
-  codex: "bg-purple-100 text-purple-700 border-purple-200",
-  generic: "bg-gray-100 text-gray-600 border-gray-200",
-};
+import { SOURCE_LABELS, SOURCE_COLORS } from "@/constants/sources";
 
 function formatDate(iso: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -74,10 +63,10 @@ export default function transcriptCard({ transcript }: Props) {
           <span
             className={cn(
               "shrink-0 rounded-full border px-2 py-0.5 text-xs font-medium",
-              sourceColors[transcript.source] ?? sourceColors.generic
+              SOURCE_COLORS[transcript.source] ?? SOURCE_COLORS.generic
             )}
           >
-            {sourceLabels[transcript.source] ?? transcript.source}
+            {SOURCE_LABELS[transcript.source] ?? transcript.source}
           </span>
         </div>
         <CardDescription className="sr-only">{transcript.filename}</CardDescription>

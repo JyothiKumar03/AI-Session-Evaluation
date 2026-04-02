@@ -18,23 +18,10 @@ import scoreGrid from "@/components/score-grid";
 import segmentsList from "@/components/segments-list";
 import { useTranscriptDetail } from "@/hooks/use-transcripts";
 import { cn } from "@/lib/utils";
+import { SOURCE_LABELS, WORKFLOW_COLORS } from "@/constants/sources";
 
 const ScoreGrid = scoreGrid;
 const SegmentsList = segmentsList;
-
-const workflowColors: Record<string, string> = {
-  "plan-first": "bg-violet-100 text-violet-700 border-violet-200",
-  "dive-in": "bg-blue-100 text-blue-700 border-blue-200",
-  iterative: "bg-green-100 text-green-700 border-green-200",
-  reactive: "bg-amber-100 text-amber-700 border-amber-200",
-  exploratory: "bg-sky-100 text-sky-700 border-sky-200",
-};
-
-const sourceLabels: Record<string, string> = {
-  claude_code: "Claude Code",
-  codex: "Codex",
-  generic: "Generic",
-};
 
 function formatDate(iso: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -116,7 +103,7 @@ export default function TranscriptDetailPage({ params }: Props) {
       </Link>
 
       {/* Header card */}
-      <div className="rounded-2xl bg-white ring-1 ring-foreground/10 p-6 flex flex-col gap-4">
+      <div className="rounded-2xl bg-white ring-1 ring-gray-200 p-6 flex flex-col gap-4">
         <div className="flex items-start gap-4">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50">
             <FileText
@@ -130,7 +117,7 @@ export default function TranscriptDetailPage({ params }: Props) {
             </h1>
             <div className="flex flex-wrap items-center gap-2 mt-2">
               <span className="text-xs text-gray-400">
-                {sourceLabels[transcript.source] ?? transcript.source}
+                {SOURCE_LABELS[transcript.source] ?? transcript.source}
               </span>
               <span className="text-gray-200">·</span>
               <span className="text-xs text-gray-400">
@@ -146,7 +133,7 @@ export default function TranscriptDetailPage({ params }: Props) {
             <span
               className={cn(
                 "shrink-0 rounded-full border px-3 py-1 text-xs font-medium capitalize",
-                workflowColors[analysis.workflow_pattern] ??
+                WORKFLOW_COLORS[analysis.workflow_pattern] ??
                   "bg-gray-100 text-gray-600 border-gray-200"
               )}
             >
@@ -176,7 +163,7 @@ export default function TranscriptDetailPage({ params }: Props) {
 
       {/* No analysis state */}
       {!analysis && (
-        <div className="flex flex-col items-center gap-3 py-16 text-center rounded-2xl bg-white ring-1 ring-foreground/10">
+        <div className="flex flex-col items-center gap-3 py-16 text-center rounded-2xl bg-white ring-1 ring-gray-200">
           <Loader2
             className="h-10 w-10 text-blue-400 animate-spin"
             strokeWidth={1.5}
@@ -208,7 +195,7 @@ export default function TranscriptDetailPage({ params }: Props) {
       {analysis && (
         <div className="grid gap-4 sm:grid-cols-2">
           {/* Strengths */}
-          <div className="rounded-xl bg-white ring-1 ring-foreground/10 p-5">
+          <div className="rounded-xl bg-white ring-1 ring-gray-200 p-5">
             <SectionHeader
               icon={
                 <Star className="h-6 w-6 text-green-500" strokeWidth={1.8} />
@@ -233,7 +220,7 @@ export default function TranscriptDetailPage({ params }: Props) {
           </div>
 
           {/* Improvements */}
-          <div className="rounded-xl bg-white ring-1 ring-foreground/10 p-5">
+          <div className="rounded-xl bg-white ring-1 ring-gray-200 p-5">
             <SectionHeader
               icon={
                 <PencilLine

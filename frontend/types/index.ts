@@ -5,17 +5,62 @@ export type ApiResponse<T> = {
   error?: string;
 };
 
-// ── Transcript types ──────────────────────────────────────────────────────────
-export type MessageRole = "user" | "assistant" | "tool";
+// ── Enums (const objects for use as values + types) ───────────────────────────
+export const MessageRole = {
+  User: "user",
+  Assistant: "assistant",
+  Tool: "tool",
+} as const;
 
+export const TranscriptSource = {
+  ClaudeCode: "claude_code",
+  Codex: "codex",
+  Generic: "generic",
+} as const;
+
+export const SegmentPhase = {
+  Planning: "planning",
+  Implementation: "implementation",
+  Debugging: "debugging",
+  Refactoring: "refactoring",
+  Testing: "testing",
+  Documentation: "documentation",
+  Clarification: "clarification",
+  OffTrack: "off-track",
+} as const;
+
+export const WorkflowPattern = {
+  PlanFirst: "plan-first",
+  DiveIn: "dive-in",
+  Iterative: "iterative",
+  Reactive: "reactive",
+  Exploratory: "exploratory",
+} as const;
+
+export const MetricKey = {
+  PromptClarity: "prompt_clarity",
+  ContextManagement: "context_management",
+  IterationEfficiency: "iteration_efficiency",
+  CriticalThinking: "critical_thinking",
+  ErrorRecovery: "error_recovery",
+  AiLeverage: "ai_leverage",
+  WorkflowStructure: "workflow_structure",
+} as const;
+
+// ── Derived types ─────────────────────────────────────────────────────────────
+export type MessageRole = (typeof MessageRole)[keyof typeof MessageRole];
+export type TranscriptSource = (typeof TranscriptSource)[keyof typeof TranscriptSource];
+export type SegmentPhase = (typeof SegmentPhase)[keyof typeof SegmentPhase];
+export type WorkflowPattern = (typeof WorkflowPattern)[keyof typeof WorkflowPattern];
+export type MetricKey = (typeof MetricKey)[keyof typeof MetricKey];
+
+// ── Transcript types ──────────────────────────────────────────────────────────
 export type Message = {
   role: MessageRole;
   content: string;
   timestamp: string | null;
   index: number;
 };
-
-export type TranscriptSource = "claude_code" | "codex" | "generic";
 
 export type TranscriptRow = {
   id: string;
@@ -28,15 +73,6 @@ export type TranscriptRow = {
 };
 
 // ── Analysis types ────────────────────────────────────────────────────────────
-export type MetricKey =
-  | "prompt_clarity"
-  | "context_management"
-  | "iteration_efficiency"
-  | "critical_thinking"
-  | "error_recovery"
-  | "ai_leverage"
-  | "workflow_structure";
-
 export type MetricScore = {
   score: number;
   confidence: number;
@@ -44,16 +80,6 @@ export type MetricScore = {
 };
 
 export type OverallScores = Record<MetricKey, MetricScore>;
-
-export type SegmentPhase =
-  | "planning"
-  | "implementation"
-  | "debugging"
-  | "refactoring"
-  | "testing"
-  | "documentation"
-  | "clarification"
-  | "off-track";
 
 export type SegmentSignals = {
   user_provided_context: boolean;
@@ -80,13 +106,6 @@ export type Segment = {
   scores: SegmentScores;
   commentary: string;
 };
-
-export type WorkflowPattern =
-  | "plan-first"
-  | "dive-in"
-  | "iterative"
-  | "reactive"
-  | "exploratory";
 
 export type AnalysisRow = {
   id: string;

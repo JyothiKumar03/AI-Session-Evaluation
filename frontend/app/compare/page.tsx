@@ -8,6 +8,7 @@ import {
   Loader2,
   ChevronRight,
   FileText,
+  CheckCircle2,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import compareView from "@/components/compare-view";
@@ -34,10 +35,11 @@ function SessionPicker({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-xs font-semibold uppercase tracking-widest text-gray-400">
+      <p className="text-xs font-semibold uppercase tracking-widest text-gray-500">
         {label}
       </p>
-      <div className="rounded-xl bg-white ring-1 ring-foreground/10 divide-y divide-gray-100 overflow-hidden max-h-64 overflow-y-auto">
+      {/* Show ~2 items then scroll */}
+      <div className="rounded-xl border border-gray-200 divide-y divide-gray-100 overflow-y-auto max-h-[116px]">
         {transcripts.length === 0 && (
           <p className="px-4 py-6 text-sm text-center text-gray-400">
             No sessions available
@@ -54,16 +56,16 @@ function SessionPicker({
               className={cn(
                 "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors",
                 isSelected
-                  ? "bg-blue-50"
+                  ? "bg-blue-600"
                   : isDisabled
-                  ? "opacity-40 cursor-not-allowed"
-                  : "hover:bg-gray-50"
+                  ? "opacity-40 cursor-not-allowed bg-gray-50"
+                  : "bg-white hover:bg-gray-50"
               )}
             >
               <FileText
                 className={cn(
                   "h-4 w-4 shrink-0",
-                  isSelected ? "text-blue-600" : "text-gray-400"
+                  isSelected ? "text-blue-200" : "text-gray-400"
                 )}
                 strokeWidth={1.8}
               />
@@ -71,17 +73,17 @@ function SessionPicker({
                 <p
                   className={cn(
                     "text-sm font-medium truncate",
-                    isSelected ? "text-blue-700" : "text-gray-800"
+                    isSelected ? "text-white" : "text-gray-800"
                   )}
                 >
                   {t.filename}
                 </p>
-                <p className="text-xs text-gray-400">
+                <p className={cn("text-xs", isSelected ? "text-blue-200" : "text-gray-400")}>
                   {t.message_count} messages
                 </p>
               </div>
               {isSelected && (
-                <span className="shrink-0 h-2 w-2 rounded-full bg-blue-500" />
+                <CheckCircle2 className="shrink-0 h-4 w-4 text-white" strokeWidth={2} />
               )}
             </button>
           );
@@ -120,10 +122,10 @@ function ComparisonResult({
 
   if (isError) {
     return (
-      <div className="flex flex-col items-center gap-3 py-16 text-center rounded-2xl bg-white ring-1 ring-foreground/10">
+      <div className="flex flex-col items-center gap-3 py-16 text-center rounded-2xl bg-white ring-1 ring-gray-200">
         <AlertCircle className="h-14 w-14 text-red-400" strokeWidth={1.5} />
         <div>
-          <p className="font-semibold text-gray-800">Failed to load comparison</p>
+          <p className="font-semibold text-gray-900">Failed to load comparison</p>
           <p className="text-sm text-gray-500 mt-1">{(error as Error).message}</p>
         </div>
       </div>
@@ -162,17 +164,19 @@ function comparePageInner() {
       {/* Page header */}
       <div>
         <div className="flex items-center gap-3 mb-1">
-          <Columns2 className="h-8 w-8 text-blue-600" strokeWidth={1.8} />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600">
+            <Columns2 className="h-5 w-5 text-white" strokeWidth={2} />
+          </div>
           <h1 className="text-2xl font-semibold text-gray-900">Compare Sessions</h1>
         </div>
-        <p className="text-sm text-gray-500 ml-11">
+        <p className="text-sm text-gray-500 ml-12">
           Select two sessions to compare metrics, strengths, and weaknesses side by side.
         </p>
       </div>
 
       {/* Picker */}
-      <div className="rounded-2xl bg-white ring-1 ring-foreground/10 p-6 flex flex-col gap-5">
-        <p className="text-sm font-semibold text-gray-700">Choose Sessions</p>
+      <div className="rounded-2xl bg-white ring-1 ring-gray-200 p-6 flex flex-col gap-5">
+        <p className="text-sm font-semibold text-gray-800">Choose Sessions</p>
 
         {loadingList ? (
           <div className="flex items-center gap-2 text-sm text-gray-400">
@@ -204,7 +208,7 @@ function comparePageInner() {
           className={cn(
             "self-end flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors",
             canCompare
-              ? "bg-blue-600 text-white hover:bg-blue-700"
+              ? "bg-blue-600 text-white hover:bg-blue-700 shadow-sm"
               : "bg-gray-100 text-gray-400 cursor-not-allowed"
           )}
         >

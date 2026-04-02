@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI Workflow Evaluator",
+  title: "AI Coding Session Evaluator",
   description: "Analyse and evaluate your AI coding sessions",
 };
 
