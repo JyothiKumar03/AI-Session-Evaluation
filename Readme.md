@@ -82,6 +82,10 @@ Frontend runs on [http://localhost:3000](http://localhost:3000), backend on port
 ![alt text](assets/session-analytics.png)
 ![alt text](assets/session-compare.png)
 
+## Demo
+
+[Watch the walkthrough on Loom](https://www.loom.com/share/5c48da691aa24258a1af1baa8001525c)
+
 - **Upload transcripts** from Claude Code, OpenAI Codex, or generic markdown-style sessions. The parser auto-detects the format.
 
 - **Automatic analysis** runs right after upload — the session is scored across 7 metrics: Prompt Clarity, Context Management, Iteration Efficiency, Critical Thinking, Error Recovery, AI Leverage, and Workflow Structure.
